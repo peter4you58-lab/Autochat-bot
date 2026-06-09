@@ -17,9 +17,8 @@ const BUSINESS = {
 };
 // =======================================
 
-const conversations = {}; // in-memory chat history per customer
+const conversations = {};
 
-// Meta calls this once to verify your webhook
 app.get('/webhook', (req, res) => {
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
@@ -32,9 +31,8 @@ app.get('/webhook', (req, res) => {
   }
 });
 
-// Incoming WhatsApp messages
 app.post('/webhook', async (req, res) => {
-  res.sendStatus(200); // reply to Meta instantly
+  res.sendStatus(200);
   try {
     const value = req.body.entry?.[0]?.changes?.[0]?.value;
     const message = value?.messages?.[0];
@@ -75,23 +73,20 @@ RULES:
 - After collecting all 3, give an order summary and the payment details.
 - Delivery: 1-3 days Lagos, 3-5 days other states.`;
 
+  const contents = history.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
+
   const res = await axios.post(
-    'https://api.anthropic.com/v1/messages',
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
     {
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
-      system: systemPrompt,
-      messages: history
+      system_instruction: { parts: [{ text: systemPrompt }] },
+      contents: contents
     },
-    {
-      headers: {
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json'
-      }
-    }
+    { headers: { 'Content-Type': 'application/json' } }
   );
-  return res.data.content[0].text;
+  return res.data.candidates[0].content.parts[0].text;
 }
 
 async function sendWhatsApp(phoneNumberId, to, message) {
