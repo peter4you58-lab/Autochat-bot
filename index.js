@@ -12,7 +12,7 @@ const BUSINESS = {
 - Corporate Blazer ₦12,000 | OUT OF STOCK
 - Tie-Dye Set ₦9,500 | Sizes M,L | IN STOCK
   `,
-  payment: "GTBank — 0123456789 — AutoChat Demo",
+  payment: "Opay — 8126107925 — AutoChat Demo",
   tone: "friendly and warm"
 };
 // =======================================
@@ -71,7 +71,7 @@ RULES:
 - If out of stock, say so and suggest an alternative.
 - When the customer wants to order, collect full name, then delivery address, then email — one at a time.
 - After collecting all 3, give an order summary and the payment details.
-- Delivery: 1-3 days Lagos, 3-5 days other states.`;
+- Delivery: 1-2 days within Enugu, 3-5 days to other states.`;
 
   const contents = history.map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
